@@ -1,0 +1,100 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Vector;
+
+
+public class Shudu {
+		private int n=0;//空位的个数 
+		private Solver solver;		//声明一个对象引用
+		private int[][] data=new int[9][9];
+		private static File file=new File("D:/shudu1.txt");//静态方法优先于构造函数执行
+		public Shudu(){
+			this.setFile(file);
+			this.reader();
+			this.nullSpace();
+			solver=new Solver(data, n);
+			this.data=solver.checkFull();
+		}
+		public int[][] getData(){//-------------------------------------
+			return this.data;
+		}
+		public void setFile(File file){
+			this.file=file;
+		}
+		public int[][] reader(){
+			try{
+				FileReader fir=new FileReader(file);
+				@SuppressWarnings("resource")
+				BufferedReader bufr=new BufferedReader(fir);
+				String len=null;
+				int loc=0;
+		            //-------------------------------------------逐一获取每一个字符串
+		                while((len=bufr.readLine())!=null){//这里可以按行读取，即可以读取一行,,,,达到流的结尾则返回-1
+		                	//String Regex="\\s|,";
+		                	String Regex="\\D";
+		                	String arr=len.replaceAll(Regex, "");
+		                	char[] ch=arr.toCharArray();
+		                	for(int i=0;i<9;i++){
+		                	data[loc/9][loc%9]= ch[i]-'0';
+		                	loc++;
+		                	}
+		                   if(loc>=81){
+		                	   break;
+		                   }
+		                }
+				
+			}
+			catch(Exception e){System.out.print("你好");}
+			return data;
+		}
+		public void nullSpace(){
+			 for(int i=0;i<9;i++)                //输出原数独，并获取数独中空位个数
+	         {
+	               for(int j=0;j<9;j++)
+	              {
+	                    if(data[i][j]==0)
+	                   {
+	                         n++;
+	                   }
+	             }
+	       }
+		}
+		public void ResultPrint(){//本类的打他数据域solver中的data的数据相同了
+			try{
+			FileWriter fw=new FileWriter(file,true);
+			BufferedWriter bufw=new BufferedWriter(fw);
+			if(data==null){
+				bufw.write("无解？？？");
+				fw.close();
+			}
+			else{
+				bufw.newLine();
+				bufw.newLine();
+				bufw.write("数独的答案如下：");
+				bufw.newLine();
+				bufw.flush();
+			for(int i=0;i<9;i++)                //输出结果
+			{
+				for(int j=0;j<9;j++)
+				{
+					bufw.write(data[i][j]+"");
+					bufw.append(" ");
+					bufw.flush();
+				}
+				bufw.newLine();
+			}
+			
+			fw.close();
+			}
+			}
+			catch(Exception e){}
+	}
+		public static void main(String[] args){
+			new Shudu();
+			
+		}
+
+}

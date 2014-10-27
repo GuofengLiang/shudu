@@ -1,0 +1,67 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JLabel;
+public class Clock extends JLabel{
+	private long startTime = 0;//给定初始值
+    private long stopTime = 0;
+    private long pausedTime = 0;
+    private boolean running = false;//-------------------设置标志位
+    private static long elapsed;
+    public Clock(){
+    	Clock.time();
+    	this.initialLabel();
+    }
+    public void initialLabel(){
+    	this.setText("你好");
+    } 
+    public void start() {//----------------------------------------------------------------
+        this.startTime = System.currentTimeMillis();//返回的是毫秒
+        pausedTime = 0;//------------------------------？？
+        this.running = true;
+    }
+
+    public void stop() {
+        this.stopTime = System.currentTimeMillis();
+        this.running = false;
+    }
+
+    public void pause() {
+        if(running) {//--------------------------------------------按暂停按钮之前，要有个判断，时钟必须是运行的
+            pausedTime = System.currentTimeMillis();
+            stop();
+        }
+    }
+
+    public void resume() {//---------------------------------------------继续游戏，之前也要有个判断，时钟必须是停止的
+        if(!running){
+            long duration = System.currentTimeMillis() - pausedTime;//------------------暂停的那段时间
+            startTime += duration;//-----------------------------------------相当于把开始的时间延长，推迟了
+            this.running = true;
+        }
+    }
+
+    //elaspsed time in milliseconds
+    public void getElapsedTime() {//--------------------------------------------运行的时间
+        if (running) {//-------------------------------------------------------如果还在运行，
+            elapsed = (System.currentTimeMillis() - startTime);//-----------------这里记录的是正在运行了多长的时间
+        } else {
+            elapsed = (stopTime - startTime);//-------------------------------游戏结束时共花了多长时间
+        }
+    }
+    public static void time(){
+    	new Thread() {
+		public void run() {
+            try {
+            	Date d=new Date(elapsed);
+                while (true) {
+                	SimpleDateFormat sdf=new SimpleDateFormat("mm:s:sss");//将模式封装到SimpleDateFormat对象中
+                	String time=sdf.format(d);//调用format方法让模式格式化指定的Date对象
+                    new Clock().setText(time);//显示当前时间
+                }
+            } catch (Exception e) {
+            }
+        }
+    }.start();
+    }
+}

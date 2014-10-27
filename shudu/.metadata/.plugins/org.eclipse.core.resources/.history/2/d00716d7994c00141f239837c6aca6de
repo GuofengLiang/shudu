@@ -1,0 +1,21 @@
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+
+public class Grid extends JPanel{
+	private JButton[][] button=new JButton[9][9];
+	private Shudu shudu=new Shudu();
+	public Grid(){
+		this.initialPanel();
+	}
+	public void initialPanel(){
+		this.setLayout(new GridLayout(9,9));
+		for(int i=0;i<9;i++){
+			for(int j=0;j<9;j++){
+				System.out.println(shudu.Reader()+""));
+				this.add(new JButton(shudu.Reader()+""));
+			}
+		}
+	}
+}

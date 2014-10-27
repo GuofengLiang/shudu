@@ -1,0 +1,173 @@
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.text.SimpleDateFormat;
+public class ShuduUI extends JFrame implements ActionListener{//创建数独主界面
+	private JMenuBar bar=new JMenuBar();
+	private JMenu[] menuArray={new JMenu("等级"),new JMenu("自定义"),new JMenu("帮助"),new JMenu("关于"),new JMenu("游戏")};
+	private JMenuItem[] itemArray={new JMenuItem("初级"),new JMenuItem("中级"),new JMenuItem("高级"),new JMenuItem("导入文件"),
+							new JMenuItem("导出答案"),new JMenuItem("数独百科"),new JMenuItem("版本"),new JMenuItem("退出")};
+	private JPanel options=new JPanel();
+	private JButton[] jbArray={new JButton("开始"),new JButton("停止"),new JButton("继续"),new JButton("重置"),new JButton("认输"),new JButton("提交")};
+    private JLabel time=new JLabel();//声明时间表
+	private Grid grid=new Grid();//声明九宫格的引用
+	private Shudu shudu=new Shudu();
+	private Clock clock=new Clock();
+	private JPanel jp=new JPanel();
+	private FileDialog open=new FileDialog(this,"打开",FileDialog.LOAD);
+	private File file=new File("D:/shudu.txt");
+	private boolean paused=false;
+	private JSplitPane jsp=new JSplitPane(JSplitPane.VERTICAL_SPLIT,options,jp);;
+	public ShuduUI(){
+		this.initialTime();
+		this.initialBar();
+		this.initialPanel();
+		this.initialFrame();
+		this.addListener();
+		
+	}
+	private void initialTime() {
+		time.setFont(new Font("宋体", Font.BOLD,16)); 
+		time.setForeground(new Color(0,0,0));
+		time.setBackground(new Color(180,195,218));
+		time.setOpaque(true);
+        Thread thread = new Thread(new Runnable() {//--------------------------------------开启一个时钟线程
+
+            public void run() {
+                clock.start();//-------------------------------------------表示开始计时，返回的是秒钟
+                while (true) {
+                    if (!paused) {//---------------------当paused为false时
+                        final String timeString = new SimpleDateFormat("mm:ss:SSS").format(clock.getElapsedTime());
+                        time.setText("" + timeString);//---------------------------------时钟标签里要显示的字符串
+                    }
+                }
+            }
+        });
+        thread.start();
+    }             
+	
+	public void initialBar(){
+		menuArray[4].add(itemArray[7]);
+		menuArray[0].add(itemArray[0]);//为第一个菜单项添加子项
+		menuArray[0].addSeparator();
+		menuArray[0].add(itemArray[1]);
+		menuArray[0].addSeparator();
+		menuArray[0].add(itemArray[2]);//为第二个菜单项添加子项
+		menuArray[1].add(itemArray[3]);
+		menuArray[1].addSeparator();
+		menuArray[1].add(itemArray[4]);
+		menuArray[2].add(menuArray[3]);
+		menuArray[3].add(itemArray[5]);//为第三个菜单项添加子项
+		menuArray[3].addSeparator();
+		menuArray[3].add(itemArray[6]);
+		bar.add(menuArray[4]);
+		bar.add(menuArray[0]);//为菜单栏添加菜单
+		bar.add(menuArray[1]);
+		bar.add(menuArray[2]);
+	}
+	public void initialPanel(){
+		options.setLayout(new GridLayout());
+		options.add(jbArray[0]);options.add(jbArray[1]);
+		options.add(jbArray[2]);options.add(jbArray[3]);
+		options.add(jbArray[4]);options.add(jbArray[5]);
+		options.add(time);
+	}
+	public void initialFrame(){
+		jp.setLayout(new GridLayout());
+		jp.add(grid);
+		this.setJMenuBar(bar);
+		jsp.setDividerLocation(30);
+		jsp.setDividerSize(4);
+		jsp.setEnabled(false);//设置分隔条不能滚动
+		
+		this.add(jsp);
+		
+		//this.setIconImage(image);
+		this.setTitle("数独乐园");
+		this.setFont(new Font("宋体", Font.PLAIN, 18));
+		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+		int width=screenSize.width/2;
+		int height=screenSize.height/2;
+		int w=600;
+		int h=600;
+		this.setBounds(width-w/2, height-h/2, w, h);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setVisible(true);
+		
+	}
+	public void addListener(){
+		for(int i=0;i<menuArray.length;i++){
+			menuArray[i].addActionListener(this);
+			}
+		for(int i=0;i<jbArray.length;i++){
+			jbArray[i].addActionListener(this);
+		}
+		for(int i=0;i<itemArray.length;i++){
+			itemArray[i].addActionListener(this);
+		}
+	}
+	public void actionPerformed(ActionEvent e){
+		if(e.getSource()==itemArray[7]){
+			System.exit(0);
+		}
+		if(e.getSource()==itemArray[6]){
+			JOptionPane.showMessageDialog(this, "版本：1.0\n已更新至最新版本", "版本信息", JOptionPane.INFORMATION_MESSAGE);
+		}
+		if(e.getSource()==itemArray[5]){
+			try{
+				Runtime.getRuntime().exec("rundll32  url.dll,FileProtocolHandler "+"http://baike.baidu.com/" +
+						"subview/961/10842669.htm?fr=aladdin" );//　　　　　　　　　链接到数独百科网页
+			}
+			catch(Exception ea){}
+		}
+		if(e.getSource()==itemArray[3]){
+			open.setVisible(true);
+			String dirpath=open.getDirectory();
+			String fileName=open.getFile();
+			if(dirpath==null||fileName==null)
+				return;
+			try{
+				file=new File(dirpath,fileName);
+				shudu.setFile(file);
+					jp.removeAll();
+					jp.add(new Grid());
+					jp.validate();
+			}
+			catch(Exception ea){
+				JOptionPane.showMessageDialog(this, "导入失败，输入的数据有误", "提示", JOptionPane.INFORMATION_MESSAGE);
+				shudu.setFile(file);
+				jp.removeAll();
+				jp.add(new Grid());
+				jp.validate();
+				return;
+				}		
+			}
+		if(e.getSource()==itemArray[4]){
+			shudu=new Shudu();
+			shudu.ResultPrint();	//原来是这里错了－－－－注意变量的作用域
+			try{
+				
+					JOptionPane.showMessageDialog(this, "恭喜您，已经成功导出答案到原来的文件中,\n请按确定查看", "提示", JOptionPane.INFORMATION_MESSAGE);
+				java.awt.Desktop.getDesktop().open(file);
+				
+				}
+			catch(Exception ea){}
+		}
+		
+		if(e.getSource()==jbArray[4]){
+		jp.removeAll();
+		jp.add(new Grid(this));
+//		jp.repaint();
+//		this.setVisible(true);
+		jp.validate(); 
+		
+		
+	}
+	}
+	public static void main(String[] args){
+		new ShuduUI();
+		
+	}
+}

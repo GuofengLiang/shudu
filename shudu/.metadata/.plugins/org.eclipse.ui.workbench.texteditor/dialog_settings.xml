@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="273" key="DIALOG_WIDTH"/>
+		<item value="106" key="DIALOG_Y_ORIGIN"/>
+		<item value="555" key="DIALOG_X_ORIGIN"/>
+		<item value="399" key="DIALOG_HEIGHT"/>
+		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="true" key="wrap"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wholeword"/>
+		<item value="num" key="selection"/>
+		<list key="findhistory">
+			<item value="digit"/>
+			<item value="chancecount"/>
+			<item value="rowsInGrid"/>
+			<item value="buttons"/>
+			<item value="startTimer"/>
+			<item value="Clock"/>
+			<item value="time"/>
+			<item value="onenode"/>
+		</list>
+		<list key="replacehistory">
+			<item value="num"/>
+			<item value="count"/>
+			<item value="3"/>
+			<item value="9"/>
+			<item value="jb"/>
+			<item value="time"/>
+			<item value="JPanel"/>
+			<item value="clock"/>
+		</list>
+	</section>
+</section>

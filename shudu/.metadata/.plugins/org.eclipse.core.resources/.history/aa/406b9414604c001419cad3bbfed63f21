@@ -1,0 +1,43 @@
+
+import java.applet.Applet;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
+
+
+
+public class Button1 extends Applet implements ActionListener {
+ Label lab = new Label("请输入一个网址：");
+ TextField text = new TextField(30);
+ Button b1 = new Button("GO");
+ URL url;
+
+public void init() {
+  this.add(lab);
+  this.add(text);
+  this.add(b1, null);
+  b1.addActionListener(this);
+ }
+
+ public void actionPerformed(ActionEvent event) {
+  if (event.getActionCommand() == "GO") {
+   try {
+    url = new URL(text.getText().trim());// 获取用户在文档框中输入的URL
+    getAppletContext().showDocument(url);// 链接到指定网页
+   } catch (Exception e) {
+    e.printStackTrace();
+   }
+
+  }
+ }
+
+ public void paint(Graphics g) {
+  this.setBackground(Color.red);
+
+ }
+}

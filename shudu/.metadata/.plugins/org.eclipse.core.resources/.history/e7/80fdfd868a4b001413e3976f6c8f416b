@@ -1,0 +1,90 @@
+
+public class Solver
+{	
+	private int n=0;
+	private int[][] data=null;
+	private int[][] point=new int[n][2];     //当前判断对象的坐标集合
+	private	int[][] chance=new int[n][9];    //当前判断对象可填入数字集合
+	private	int[] onepoint=new int[n];       //当前判断对象的可能值集合下标----------n用来表示每一层的层数,数组对应的数字表示该层的脚标
+	private Check check=new Check();
+	public Solver(int[][] data,int n){
+		this.data=data;
+		this.n=n;
+		this.solve();
+	}
+	public void solve(){
+			
+			int po=0;												//----其实这里可以用二维数组来存放一维数组
+			for(int i=0;i<9;i++)             //获取所有空位的坐标
+			{
+				for(int j=0;j<9;j++)
+				{
+					if(data[i][j]==0)
+					{
+						point[po][0]=i;
+						point[po][1]=j;
+						po++;
+					}
+				}
+			}//----------------------------------------下面是用来记录每一层的长度跟该层的能填的具体数字
+			int[] chancecount=new int[n];    //用来存储具体空位的可能值的个数---------------n表示具体空位对应的值就是可能值的个数
+			for(int digit=1;digit<=9;digit++)   //暂时通过chance固定长度数组存储可能值，1代表该下标加1可填，否则不可填
+			{
+				for(int i=0;i<n;i++)	//--------data是原来的要填的数组-----------对每一层的可能值进行判断
+				{
+					if(check.boolcheck(data, digit, point[i][0], point[i][1]))//------判断该数能否填入该位置
+					{
+						chance[i][digit-1]=1;// 表示第i层该数字能填
+						chancecount[i]++;
+					}
+				}
+			}
+			int[][] temp=new int[n][];    //借助该二维数组存储可能值
+			for(int i=0;i<n;i++)          //将chance的1和0代表的可能值转化为具体数字
+			{
+				temp[i]=new int[chancecount[i]];//chancecount[i]这里表示可填数的长度----这里的层对应二维数组的行
+				int p=0;				//表示每一层都要从头开始遍历
+				for(int j=0;j<9;j++)
+				{
+					if(chance[i][j]==1)
+					{
+						temp[i][p]=j+1;//j+1表示的是存放的数字
+						p++;//p表示能填的数字的长度,这里表示按层遍历
+					}
+				}
+			}
+			chance=temp; //可能值的具体表示赋给chance
+	}
+	public int[][] checkFull(){
+	{
+			for(int i=0;i<n;i++)        //通过循环实现回溯法-------------n表示有多少解空间层
+			{
+				if(i<0)                 //当前判断位置若退回到不可判断处，则无解
+				{ 
+					
+					return null;
+				}
+				if(onepoint[i]==chance[i].length)        //该位置的所有可能值都无法填入该位置，则返回上一个结点－－－表示每个可能解的长度，即每一层解的长度，说明已经遍历完了该层的数字了
+				{
+					data[point[i][0]][point[i][1]]=0;    //当前位置设为未赋值-------这里是找到九宫格里的格子，说明未赋值
+					onepoint[i]=0;                       //当前结点判断位置归零，以保证下一次查找该处的时候能遍历所有可能值，onepoint 相当于集合的下标
+					if(i-1>=0)                           //在上一结点存在的情况下，退回上一结点
+						onepoint[i-1]++;//----------------------------i-1表示上一层，表示回到上一层后，继续向右推进
+					i=i-2;                               //使循环中的i回到前一位置，达到返回上一结点的效果
+					continue;                            //跳出此次循环，进入下一次循环，i自减2，所以下次循环的时候进入上一个结点
+				}
+				if(check.boolcheck(data, chance[i][onepoint[i]], point[i][0], point[i][1]))    //该可能值可以填入当前判断位置，则给数据赋值
+				{
+					data[point[i][0]][point[i][1]]=chance[i][onepoint[i]];  //把栈中的数据从小到大的数据试探性的赋给相应的格子，因为是试探性的，所以可以直接赋值，而不需要，再存储     
+				}
+				else                                     //不可填入时，当前可能值下标向下移一位，使i自减，达到重复运行当前结节的效果，
+				{
+					onepoint[i]++;
+					i--;//---------------------------------保证还在该活结点出，-1是因为循环的时候再加了1
+				}
+			}  
+			return data;
+
+	}
+	}
+}
